@@ -19,14 +19,9 @@ cd /root/library-management-system
 # Ubuntu/Debian 一键安装
 curl -fsSL https://get.docker.com | bash
 
-# 添加Docker Compose
-sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-
 # 验证安装
 docker --version
-docker-compose --version
+docker compose version
 ```
 
 ### 第三步：一键部署
@@ -39,7 +34,7 @@ cd /root/library-management-system/temp
 ./deploy.sh
 
 # 或者手动启动
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 就这么简单！🎉
@@ -80,22 +75,22 @@ environment:
 
 ```bash
 # 查看服务状态
-docker-compose ps
+docker compose ps
 
 # 查看日志
-docker-compose logs -f
+docker compose logs -f
 
 # 重启服务
-docker-compose restart
+docker compose restart
 
 # 停止服务
-docker-compose down
+docker compose down
 
 # 查看后端日志
-docker-compose logs -f backend
+docker compose logs -f backend
 
 # 查看MySQL日志
-docker-compose logs mysql
+docker compose logs mysql
 ```
 
 ---
