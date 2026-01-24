@@ -33,7 +33,7 @@ docker-compose --version
 
 ```bash
 # 进入项目目录
-cd /root/library-management-system
+cd /root/library-management-system/temp
 
 # 运行一键部署脚本
 ./deploy.sh

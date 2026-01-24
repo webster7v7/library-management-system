@@ -106,7 +106,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { bookApi, type Book } from '@/api'
+import { bookApi, borrowApi, type Book } from '@/api'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
@@ -142,7 +142,7 @@ const changePage = (newPage: number) => {
 
 const handleBorrow = async (bookId: number) => {
   try {
-    await bookApi.borrow(bookId)
+    await borrowApi.borrow(bookId)
     alert('借阅成功')
     loadBooks()
   } catch (error: any) {
