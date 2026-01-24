@@ -36,13 +36,11 @@ echo -e "${GREEN}✓ Docker已安装: $(docker --version)${NC}"
 
 # 2. 检查Docker Compose
 echo -e "${YELLOW}[2/6] 检查Docker Compose...${NC}"
-if ! command -v docker-compose &> /dev/null; then
-    echo -e "${YELLOW}Docker Compose未安装，正在安装...${NC}"
-    sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    sudo chmod +x /usr/local/bin/docker-compose
-    sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+if ! docker compose version &> /dev/null; then
+    echo -e "${YELLOW}Docker Compose插件未安装，正在安装Docker...${NC}"
+    curl -fsSL https://get.docker.com | bash
 fi
-echo -e "${GREEN}✓ Docker Compose已安装: $(docker-compose --version)${NC}"
+echo -e "${GREEN}✓ Docker Compose已安装: $(docker compose version)${NC}"
 
 # 3. 检查端口占用
 echo -e "${YELLOW}[3/6] 检查端口占用...${NC}"
@@ -75,9 +73,9 @@ echo -e "${GREEN}✓ 备份目录已创建${NC}"
 
 # 5. 停止旧容器（如果存在）
 echo -e "${YELLOW}[5/6] 停止旧容器...${NC}"
-if docker-compose ps | grep -q "Up"; then
+if docker compose ps | grep -q "Up"; then
     echo "正在停止现有容器..."
-    docker-compose down
+    docker compose down
     echo -e "${GREEN}✓ 旧容器已停止${NC}"
 else
     echo -e "${GREEN}✓ 无运行中的容器${NC}"
@@ -89,7 +87,7 @@ echo "这可能需要几分钟，请耐心等待..."
 echo ""
 
 # 构建镜像并启动
-docker-compose up -d --build
+docker compose up -d --build
 
 # 等待服务启动
 echo ""
@@ -99,7 +97,7 @@ sleep 10
 # 检查容器状态
 echo ""
 echo "检查容器状态..."
-docker-compose ps
+docker compose ps
 
 # 显示部署结果
 echo ""
@@ -121,10 +119,10 @@ echo "  2. 编辑 docker-compose.yml 修改 MYSQL_ROOT_PASSWORD"
 echo "  3. 建议配置HTTPS（生产环境必须）"
 echo ""
 echo "常用命令："
-echo "  查看日志: docker-compose logs -f"
-echo "  停止服务: docker-compose down"
-echo "  重启服务: docker-compose restart"
-echo "  查看状态: docker-compose ps"
+echo "  查看日志: docker compose logs -f"
+echo "  停止服务: docker compose down"
+echo "  重启服务: docker compose restart"
+echo "  查看状态: docker compose ps"
 echo ""
 echo "========================================"
 
@@ -132,5 +130,5 @@ echo "========================================"
 read -p "是否查看实时日志？(y/N) " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    docker-compose logs -f
+    docker compose logs -f
 fi
