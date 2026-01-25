@@ -97,10 +97,11 @@ public class BorrowController {
     public Result<IPage<BorrowRecord>> getBorrowHistory(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
+        Long userId = null;
         try {
             // 获取当前登录用户的ID
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            Long userId = (Long) authentication.getPrincipal();
+            userId = (Long) authentication.getPrincipal();
 
             logger.info("Fetching borrow history for user - userId: {}", userId);
             IPage<BorrowRecord> result = borrowService.getUserBorrowHistory(userId, page, size);
