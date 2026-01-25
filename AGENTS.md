@@ -82,6 +82,8 @@ try {
 
 **TypeScript:** Strict mode enabled with `noUnusedLocals`, `noUnusedParameters`, `noFallthroughCasesInSwitch`. Path alias: `@/*` → `./src/*`
 
+**Error Handling:** Axios interceptor handles 401 by clearing token and redirecting to `/login`.
+
 ### Backend (Spring Boot + Java)
 
 **Controller Layer:** `@RestController` with `@RequestMapping("/api/resource")`. Return `Result<T>` wrapper. Use SpringDoc annotations. Admin-only: `@PreAuthorize("hasRole('ADMIN')")`
@@ -100,27 +102,31 @@ public class BookController {
 }
 ```
 
-**Service Layer:** Interface + Impl pattern. Extend `ServiceImpl<Mapper, Entity>`. Use `@Transactional` for writes. Throw `RuntimeException` for business errors.
+**Service Layer:** Interface + Impl pattern. Extend `ServiceImpl<Mapper, Entity>`. Use `@Transactional` for writes. Throw `RuntimeException` for business errors. Use `lambdaQuery()` for dynamic queries.
+
+**DTO Layer:** Use separate DTO classes (`LoginRequest`, `RegisterRequest`, `LoginResponse`) for request/response. Use `@Data` from Lombok.
 
 **Entity Layer:** Use `@Data` (Lombok). MyBatis Plus: `@TableName`, `@TableId(type = IdType.AUTO)`, `@TableLogic`. Auto-fill timestamps: `@TableField(fill = FieldFill.INSERT/INSERT_UPDATE)`
 
-**Mapper Layer:** Extend `BaseMapper<Entity>`. No XML for basic CRUD. Use `LambdaQueryWrapper` for dynamic queries.
+**Mapper Layer:** Extend `BaseMapper<Entity>`. No XML for basic CRUD.
 
 **Security:** JWT in `Authorization: Bearer <token>` header. Filter extends `OncePerRequestFilter`. Roles: ADMIN, USER (prefixed with `ROLE_`)
 
 **API Response Format:** All endpoints return `Result<T>` with code, message, data fields. Use `Result.success()`, `Result.error()`, or `Result.error(code, message)`.
 
-**Error Handling:** Global exception handler (`GlobalExceptionHandler`) catches and formats exceptions as `Result<Void>`. Log all exceptions using SLF4J.
+**Error Handling:** Global exception handler (`GlobalExceptionHandler`) catches and formats exceptions as `Result<Void>`. Log all exceptions using SLF4J with detailed step-by-step logging.
 
-**Logging:** Use SLF4J with class-level logger: `private static final Logger logger = LoggerFactory.getLogger(ClassName.class);`
+**Logging:** Use SLF4J with class-level logger: `private static final Logger logger = LoggerFactory.getLogger(ClassName.class);`. Include detailed debug logs for each step.
 
 **Naming Conventions:** Classes: PascalCase (`BookController`). Methods/Variables: camelCase (`getBookList`). Constants: UPPER_SNAKE_CASE.
+
+**Validation:** Validate inputs in controller methods. Use regex for phone/email validation.
 
 ## Additional Notes
 
 - No linter/formatter configured
-- Minimal test coverage (only one test file)
+- Minimal test coverage (only one test file: `LibraryManagementSystemApplicationTests`)
 - Docker: `docker/docker-compose.yml`
 - Backend port: 8080 | Frontend port: 5173
 - Frontend proxies `/api` to backend via Vite config
-- MyBatis Plus SQL logging enabled in dev
+- MyBatis Plus SQL logging enabled in dev (`org.apache.ibatis.logging.stdout.StdOutImpl`)
