@@ -95,15 +95,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { borrowApi } from '@/api'
-
-interface DashboardRecord {
-  id: number
-  bookTitle: string
-  username: string
-  borrowDate: string
-  status: string
-}
+import { dashboardApi, type DashboardResponse } from '@/api'
 
 const stats = ref({
   totalBooks: 0,
@@ -112,24 +104,13 @@ const stats = ref({
   totalUsers: 0
 })
 
-const recentRecords = ref<DashboardRecord[]>([])
+const recentRecords = ref<DashboardResponse['recentRecords']>([])
 
 const loadDashboard = async () => {
   try {
-    const response = await borrowApi.getList(1, 5)
-    recentRecords.value = response.data.records.map((r: any) => ({
-      id: r.id,
-      bookTitle: `图书 ${r.bookId}`,
-      username: `用户 ${r.userId}`,
-      borrowDate: r.borrowDate,
-      status: r.status
-    }))
-    stats.value = {
-      totalBooks: 120,
-      availableBooks: 85,
-      borrowedBooks: 35,
-      totalUsers: 50
-    }
+    const response = await dashboardApi.getData()
+    stats.value = response.data.stats
+    recentRecords.value = response.data.recentRecords
   } catch (error) {
     console.error('加载仪表盘数据失败:', error)
   }

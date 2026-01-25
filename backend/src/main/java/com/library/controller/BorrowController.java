@@ -2,6 +2,7 @@ package com.library.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.library.common.Result;
+import com.library.dto.BorrowRecordDTO;
 import com.library.entity.BorrowRecord;
 import com.library.service.BorrowService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +25,7 @@ public class BorrowController {
     private BorrowService borrowService;
 
     @GetMapping
-    @Operation(summary = "获取借阅列表")
+    @Operation(summary = "获取借阅列表（管理员）")
     public Result<IPage<BorrowRecord>> getBorrowList(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -37,6 +38,41 @@ public class BorrowController {
         } catch (Exception e) {
             logger.error("Failed to fetch borrow list", e);
             return Result.error(500, "获取借阅列表失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/my-borrows")
+    @Operation(summary = "获取当前用户借阅列表")
+    public Result<IPage<BorrowRecordDTO>> getMyBorrowList(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        try {
+            logger.info("Fetching current user borrow list - page: {}, size: {}", page, size);
+            IPage<BorrowRecordDTO> result = borrowService.getCurrentUserBorrowList(page, size);
+            return Result.success(result);
+        } catch (Exception e) {
+            logger.error("Failed to fetch current user borrow list", e);
+            return Result.error(500, "获取借阅列表失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/history")
+    @Operation(summary = "获取借阅历史")
+    public Result<IPage<BorrowRecordDTO>> getBorrowHistory(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Long userId = null;
+        try {
+            // 获取当前登录用户的ID
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            userId = (Long) authentication.getPrincipal();
+
+            logger.info("Fetching borrow history for user - userId: {}", userId);
+            IPage<BorrowRecordDTO> result = borrowService.getUserBorrowHistoryWithBook(userId, page, size);
+            return Result.success(result);
+        } catch (Exception e) {
+            logger.error("Failed to fetch borrow history - userId: {}", userId, e);
+            return Result.error(500, "获取借阅历史失败: " + e.getMessage());
         }
     }
 
@@ -89,26 +125,6 @@ public class BorrowController {
         } catch (Exception e) {
             logger.error("Failed to renew book - recordId: {}", recordId, e);
             return Result.error(500, "续借失败: " + e.getMessage());
-        }
-    }
-
-    @GetMapping("/history")
-    @Operation(summary = "获取借阅历史")
-    public Result<IPage<BorrowRecord>> getBorrowHistory(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Long userId = null;
-        try {
-            // 获取当前登录用户的ID
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            userId = (Long) authentication.getPrincipal();
-
-            logger.info("Fetching borrow history for user - userId: {}", userId);
-            IPage<BorrowRecord> result = borrowService.getUserBorrowHistory(userId, page, size);
-            return Result.success(result);
-        } catch (Exception e) {
-            logger.error("Failed to fetch borrow history - userId: {}", userId, e);
-            return Result.error(500, "获取借阅历史失败: " + e.getMessage());
         }
     }
 }

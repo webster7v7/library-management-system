@@ -1,12 +1,14 @@
 <template>
   <div class="bg-white rounded-lg shadow-md p-6">
     <h2 class="text-2xl font-bold text-gray-800 mb-6">借阅历史</h2>
-    
+
     <div class="overflow-x-auto">
       <table class="min-w-full bg-white">
         <thead class="bg-gray-50">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">图书ID</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">图书名称</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">作者</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ISBN</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">借阅日期</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">应还日期</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">归还日期</th>
@@ -16,7 +18,9 @@
         </thead>
         <tbody class="divide-y divide-gray-200">
           <tr v-for="record in records" :key="record.id" class="hover:bg-gray-50">
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ record.bookId }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ record.bookTitle }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ record.bookAuthor }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ record.bookIsbn }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ formatDate(record.borrowDate) }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ formatDate(record.dueDate) }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -39,7 +43,7 @@
         </tbody>
       </table>
     </div>
-    
+
     <div class="mt-4 flex justify-between items-center">
       <span class="text-sm text-gray-600">
         第 {{ page }} 页，共 {{ totalPages }} 页
@@ -66,9 +70,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { borrowApi, type BorrowRecord } from '@/api'
+import { borrowApi, type BorrowRecordDTO } from '@/api'
 
-const records = ref<BorrowRecord[]>([])
+const records = ref<BorrowRecordDTO[]>([])
 const page = ref(1)
 const size = ref(10)
 const total = ref(0)
