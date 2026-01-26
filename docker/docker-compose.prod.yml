@@ -6,11 +6,13 @@ services:
     container_name: library-backend
     ports:
       - "8080:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://172.17.0.1:3306/library_management?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+      SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3306/library_management?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-      SPRING_REDIS_HOST: 172.17.0.1
+      SPRING_REDIS_HOST: host.docker.internal
       SPRING_REDIS_PORT: 6379
       SPRING_REDIS_DATABASE: 0
       SPRING_REDIS_PASSWORD: ${SPRING_REDIS_PASSWORD}
