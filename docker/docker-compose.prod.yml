@@ -1,28 +1,21 @@
-version: '3.8'
-
 services:
   backend:
     build:
-      context: ./backend
+      context: ../backend
       dockerfile: Dockerfile
     container_name: library-backend
     ports:
       - "8080:8080"
     environment:
-      # 数据库配置 - 请根据您的实际配置填写
       SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3306/library_management?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
-      SPRING_DATASOURCE_USERNAME: ${MYSQL_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
-      # Redis配置 - 请根据您的实际配置填写
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       SPRING_REDIS_HOST: host.docker.internal
       SPRING_REDIS_PORT: 6379
       SPRING_REDIS_DATABASE: 0
-      SPRING_REDIS_PASSWORD: ${REDIS_PASSWORD}
-      # JWT配置
+      SPRING_REDIS_PASSWORD: ${SPRING_REDIS_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: 86400000
-      # MyBatis配置
-      MYBATIS_LOG_IMPL: org.apache.ibatis.logging.stdout.StdOutImpl
     networks:
       - library-network
     restart: unless-stopped
@@ -35,7 +28,7 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: ../frontend
       dockerfile: Dockerfile
     container_name: library-frontend
     ports:
