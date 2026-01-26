@@ -112,26 +112,46 @@ echo ""
 
 # 6. 测试从宿主机连接 MySQL
 echo "[6/7] 测试从宿主机连接 MySQL..."
-read -p "MySQL 密码: " -s MYSQL_PASSWORD
-echo ""
-MYSQL_TEST=$(mysql -h 127.0.0.1 -P 3306 -u root -p"$MYSQL_PASSWORD" -e "SELECT 1;" 2>&1)
-if [ $? -eq 0 ]; then
-    check_pass "宿主机可以连接 MySQL"
+if ! command -v mysql &> /dev/null; then
+    check_warn "MySQL 客户端未安装，跳过此步骤"
+    echo "   安装命令: sudo apt-get install mysql-client"
 else
-    check_fail "宿主机无法连接 MySQL"
-    echo "   错误: $MYSQL_TEST"
+    read -p "MySQL 密码: " -s MYSQL_PASSWORD
+    echo ""
+    MYSQL_TEST=$(mysql -h 127.0.0.1 -P 3306 -u root -p"$MYSQL_PASSWORD" -e "SELECT 1;" 2>&1)
+    if [ $? -eq 0 ]; then
+        check_pass "宿主机可以连接 MySQL"
+    else
+        check_fail "宿主机无法连接 MySQL"
+        echo "   错误: $MYSQL_TEST"
+    fi
 fi
 echo ""
 
-# 7. 测试从 Docker 容器内部连接
+# 7. 测试从 Docker 容器内部连接 MySQL
 echo "[7/7] 测试从 Docker 容器内部连接 MySQL..."
-DOCKER_TEST=$(docker run --rm --network bridge alpine sh -c "apk add --no-cache mysql-client >/dev/null 2>&1 && mysql -h host.docker.internal -P 3306 -u root -p'$MYSQL_PASSWORD' -e 'SELECT 1;' 2>&1")
-if [ $? -eq 0 ]; then
-    check_pass "Docker 容器可以连接 MySQL"
+if [ -z "$MYSQL_PASSWORD" ]; then
+    check_warn "未提供 MySQL 密码，跳过容器连接测试"
 else
-    check_fail "Docker 容器无法连接 MySQL"
-    echo "   错误: $DOCKER_TEST"
-    echo ""
+    DOCKER_TEST=$(docker run --rm --network bridge alpine sh -c "apk add --no-cache mysql-client >/dev/null 2>&1 && mysql -h host.docker.internal -P 3306 -u root -p'$MYSQL_PASSWORD' -e 'SELECT 1;' 2>&1")
+    if [ $? -eq 0 ]; then
+        check_pass "Docker 容器可以连接 MySQL"
+    else
+        check_fail "Docker 容器无法连接 MySQL"
+        echo "   错误: $DOCKER_TEST"
+        echo ""
+        echo "   尝试直接连接网关 IP..."
+        DOCKER_TEST2=$(docker run --rm --network bridge alpine sh -c "apk add --no-cache mysql-client >/dev/null 2>&1 && mysql -h 172.17.0.1 -P 3306 -u root -p'$MYSQL_PASSWORD' -e 'SELECT 1;' 2>&1")
+        if [ $? -eq 0 ]; then
+            check_pass "通过网关 IP (172.17.0.1) 可以连接"
+            echo "   说明 DNS 解析有问题"
+        else
+            check_fail "通过网关 IP 也无法连接"
+            echo "   错误: $DOCKER_TEST2"
+        fi
+    fi
+fi
+echo ""
     echo "   尝试直接连接网关 IP..."
     DOCKER_TEST2=$(docker run --rm --network bridge alpine sh -c "apk add --no-cache mysql-client >/dev/null 2>&1 && mysql -h 172.17.0.1 -P 3306 -u root -p'$MYSQL_PASSWORD' -e 'SELECT 1;' 2>&1)
     if [ $? -eq 0 ]; then
