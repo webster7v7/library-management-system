@@ -2,6 +2,8 @@ services:
   mysql:
     image: mysql:8.0
     container_name: library-mysql
+    env_file:
+      - ../.env
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: library_management
@@ -22,6 +24,8 @@ services:
   redis:
     image: redis:7-alpine
     container_name: library-redis
+    env_file:
+      - ../.env
     command: redis-server --requirepass ${REDIS_PASSWORD}
     volumes:
       - redis-data:/data
@@ -39,6 +43,8 @@ services:
       context: ../backend
       dockerfile: Dockerfile
     container_name: library-backend
+    env_file:
+      - ../.env
     ports:
       - "8082:8080"
     environment:
