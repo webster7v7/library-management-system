@@ -65,6 +65,9 @@ public class BorrowController {
         try {
             // 获取当前登录用户的ID
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !(authentication.getPrincipal() instanceof Long)) {
+                return Result.error(401, "认证失败");
+            }
             userId = (Long) authentication.getPrincipal();
 
             logger.info("Fetching borrow history for user - userId: {}", userId);
@@ -82,6 +85,9 @@ public class BorrowController {
         try {
             // 获取当前登录用户的ID
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !(authentication.getPrincipal() instanceof Long)) {
+                return Result.error(401, "认证失败");
+            }
             Long userId = (Long) authentication.getPrincipal();
 
             logger.info("User {} borrowing book - bookId: {}", userId, bookId);

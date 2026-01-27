@@ -3,6 +3,7 @@ package com.library.controller;
 import com.library.common.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,9 @@ import java.util.Map;
 public class HealthController {
 
     private static final Logger logger = LoggerFactory.getLogger(HealthController.class);
+
+    @Value("${spring.datasource.url}")
+    private String jdbcUrl;
 
     /**
      * 健康检查
@@ -49,7 +53,7 @@ public class HealthController {
 
             Map<String, String> info = new HashMap<>();
             info.put("database", "MySQL");
-            info.put("url", "jdbc:mysql://localhost:3306/library_management");
+            info.put("url", jdbcUrl);
 
             return Result.success("数据库连接正常", info);
         } catch (Exception e) {

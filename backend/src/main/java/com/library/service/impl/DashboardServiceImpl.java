@@ -92,7 +92,9 @@ public class DashboardServiceImpl implements DashboardService {
                     detail.setUsername(user != null ? user.getRealName() : "未知用户");
 
                     // 格式化日期
-                    detail.setBorrowDate(record.getBorrowDate().toLocalDate().toString());
+                    detail.setBorrowDate(record.getBorrowDate() != null
+                            ? record.getBorrowDate().toLocalDate().toString()
+                            : "");
 
                     detail.setStatus(record.getStatus());
 
