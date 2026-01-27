@@ -68,8 +68,16 @@ public class DatabaseInitializer implements CommandLineRunner {
 
             logger.info("Connecting to MySQL server to create database '{}'...", dbName);
 
-            // 使用不带数据库名的 URL 创建连接，添加 allowPublicKeyRetrieval 参数
-            String connectionUrl = urlWithoutDb + "?allowPublicKeyRetrieval=true&useSSL=false";
+            // 使用不带数据库名的 URL 创建连接
+            // 检查 URL 是否已经包含参数
+            String connectionUrl;
+            if (urlWithoutDb.contains("?")) {
+                // 如果已经有参数，使用 & 追加
+                connectionUrl = urlWithoutDb;
+            } else {
+                // 如果没有参数，直接连接
+                connectionUrl = urlWithoutDb;
+            }
             Connection conn = java.sql.DriverManager.getConnection(connectionUrl, username, password);
             Statement stmt = conn.createStatement();
 
