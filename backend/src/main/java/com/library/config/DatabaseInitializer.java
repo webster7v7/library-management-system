@@ -117,8 +117,8 @@ public class DatabaseInitializer implements CommandLineRunner {
                 new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)
             ).lines().collect(Collectors.joining("\n"));
 
-            // 分割 SQL 语句
-            String[] statements = sqlContent.split(";\\s*(?:(?i)DROP|(?i)CREATE|(?i)INSERT|(?i)ALTER|(?i)UPDATE|(?i)DELETE|(?i)USE)");
+            // 分割 SQL 语句 - 按分号分割，然后过滤空语句和注释
+            String[] statements = sqlContent.split(";");
 
             for (String statement : statements) {
                 String trimmed = statement.trim();
@@ -128,17 +128,12 @@ public class DatabaseInitializer implements CommandLineRunner {
                     continue;
                 }
 
+                // 跳过 USE 语句
+                if (trimmed.toUpperCase().startsWith("USE ")) {
+                    continue;
+                }
+
                 try {
-                    // 执行 SQL
-                    if (!trimmed.endsWith(";")) {
-                        trimmed += ";";
-                    }
-
-                    // 处理 USE 语句
-                    if (trimmed.toUpperCase().startsWith("USE ")) {
-                        continue; // USE 语句会由 Spring Boot JDBC 自动处理
-                    }
-
                     logger.debug("Executing SQL: {}", trimmed.substring(0, Math.min(100, trimmed.length())) + "...");
 
                     try {
