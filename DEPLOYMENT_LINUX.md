@@ -34,13 +34,13 @@ Update `.env` with generated values.
 
 ```bash
 # Build and start all services
-docker-compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml up -d --build
 
 # Check service status
-docker-compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.prod.yml ps
 
 # View logs
-docker-compose -f docker-compose.prod.yml logs -f
+docker compose -f docker-compose.prod.yml logs -f   
 ```
 
 ### 4. Access Application
