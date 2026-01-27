@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/library/maven:3.9-eclipse-temurin-17 AS builder
+FROM maven:3.9-eclipse-temurin-17 AS builder
 
 WORKDIR /app
 
@@ -7,7 +7,7 @@ COPY src ./src
 
 RUN mvn clean package -DskipTests
 
-FROM registry.cn-hangzhou.aliyuncs.com/library/eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
