@@ -64,20 +64,23 @@ public class DatabaseInitializer implements CommandLineRunner {
     private void createDatabaseIfNotExists() {
         try {
             String dbName = extractDatabaseName();
-            String urlWithoutDb = jdbcUrl.substring(0, jdbcUrl.lastIndexOf('/') + 1);
+            
+            // 构建基础 URL（不带数据库名，但保留其他参数）
+            // 先移除查询参数，找到数据库名位置
+            int queryIndex = jdbcUrl.indexOf('?');
+            String urlWithoutParams = (queryIndex != -1) ? jdbcUrl.substring(0, queryIndex) : jdbcUrl;
+            String params = (queryIndex != -1) ? jdbcUrl.substring(queryIndex) : "";
+            
+            // 找到最后一个 / 之前的部分（主机:端口）
+            int lastSlash = urlWithoutParams.lastIndexOf('/');
+            String baseUrl = urlWithoutParams.substring(0, lastSlash + 1);
+            
+            // 构建连接 URL：基础 URL + 参数
+            String connectionUrl = baseUrl + params;
 
             logger.info("Connecting to MySQL server to create database '{}'...", dbName);
+            logger.info("Connection URL: {}", connectionUrl);
 
-            // 使用不带数据库名的 URL 创建连接
-            // 检查 URL 是否已经包含参数
-            String connectionUrl;
-            if (urlWithoutDb.contains("?")) {
-                // 如果已经有参数，使用 & 追加
-                connectionUrl = urlWithoutDb;
-            } else {
-                // 如果没有参数，直接连接
-                connectionUrl = urlWithoutDb;
-            }
             Connection conn = java.sql.DriverManager.getConnection(connectionUrl, username, password);
             Statement stmt = conn.createStatement();
 
