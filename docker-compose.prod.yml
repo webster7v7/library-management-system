@@ -9,6 +9,7 @@ services:
       MYSQL_DATABASE: library_management
       TZ: Asia/Shanghai
       MYSQL_INITDB_SKIP_TZINFO: 1
+    command: --default-authentication-plugin=mysql_native_password
     volumes:
       - mysql-data:/var/lib/mysql
       - ./backend/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
