@@ -41,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/debug/**").permitAll() // 调试专用
                         .requestMatchers("/api/health/**").permitAll() // 健康检查
                         .requestMatchers("/api/test/**").permitAll() // 数据库测试
+                        .requestMatchers("/actuator/**").permitAll() // Actuator监控端点
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
